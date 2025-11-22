@@ -101,33 +101,35 @@ function drawMap() {
 
 // Movement
 document.addEventListener("keydown", e => {
+  if (mapCanvas.style.display === "none") return; // ignore if in battle
+
   const step = 40;
-  if (mapCanvas.style.display !== "none") {
-    if (e.key === "ArrowUp") player.y -= step;
-    if (e.key === "ArrowDown") player.y += step;
-    if (e.key === "ArrowLeft") player.x -= step;
-    if (e.key === "ArrowRight") player.x += step;
+  let newX = player.x;
+  let newY = player.y;
 
-    // Clamp
-    player.x = Math.max(0, Math.min(mapCanvas.width - player.size, player.x));
-    player.y = Math.max(0, Math.min(mapCanvas.height - player.size, player.y));
+  if (e.key === "ArrowUp") newY -= step;
+  if (e.key === "ArrowDown") newY += step;
+  if (e.key === "ArrowLeft") newX -= step;
+  if (e.key === "ArrowRight") newX += step;
 
+  // Clamp
+  newX = Math.max(0, Math.min(mapCanvas.width - player.size, newX));
+  newY = Math.max(0, Math.min(mapCanvas.height - player.size, newY));
+
+  // Check collision with obstacles
+  let collided = obstacles.some(o =>
+    newX < o.x + o.size &&
+    newX + player.size > o.x &&
+    newY < o.y + o.size &&
+    newY + player.size > o.y
+  );
+
+  if (collided) {
+    startBattle();
+  } else {
+    player.x = newX;
+    player.y = newY;
     drawMap();
-    checkCollision();
-  }
-});
-
-// Collision check
-function checkCollision() {
-  for (let o of obstacles) {
-    if (
-      player.x < o.x + o.size &&
-      player.x + player.size > o.x &&
-      player.y < o.y + o.size &&
-      player.y + player.size > o.y
-    ) {
-      startBattle();
-    }
   }
 }
 
