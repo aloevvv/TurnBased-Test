@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Turn-Based Test</title>
+  <style>
+    canvas {
+      background: #eee;
+      display: block;
+      margin: 20px auto;
+      border: 2px solid #333;
+    }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="400" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Player (blue square)
+let player = { x: 50, y: 50, size: 40, color: "blue" };
+
+// Obstacles (red squares)
+let obstacles = [
+  { x: 150, y: 50, size: 40, color: "red" },
+  { x: 250, y: 150, size: 40, color: "red" },
+  { x: 100, y: 250, size: 40, color: "red" }
+];
+
+// Draw everything
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw player
+  ctx.fillStyle = player.color;
+  ctx.fillRect(player.x, player.y, player.size, player.size);
+
+  // Draw obstacles
+  obstacles.forEach(o => {
+    ctx.fillStyle = o.color;
+    ctx.fillRect(o.x, o.y, o.size, o.size);
+  });
+}
+
+// Handle movement (arrow keys)
+document.addEventListener("keydown", e => {
+  const step = 40; // move one grid square
+  if (e.key === "ArrowUp") player.y -= step;
+  if (e.key === "ArrowDown") player.y += step;
+  if (e.key === "ArrowLeft") player.x -= step;
+  if (e.key === "ArrowRight") player.x += step;
+
+  // Keep player inside canvas
+  player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
+  player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
+
+  draw();
+});
+
+// Initial draw
+draw();
+</script>
+</body>
+</html>
